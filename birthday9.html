@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <link rel="icon" type="image/png" href="assets/images/icon.png" />
+    <style>
+        :root {
+            --bg-light-gray: #f8f9fa;
+            --btn-pink: #ffd1dc;
+            --btn-pink-hover: #ffb6c1;
+            --btn-blue: #a2b0ff;
+            --btn-blue-hover: #7b9cff;
+            --text-dark: #333;
+            --pink-accent: #ff69b4;
+            --blue-accent: #2f6690;
+        }
+
+        #home .home-container { background: linear-gradient(135deg, #ffe6f2, #ffb6c1); }
+        #letter .home-container { background: linear-gradient(135deg, #fff0f5, #ffd1dc); }
+        #memories .home-container { background: linear-gradient(135deg, #e6f2ff, #b6c1ff); }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Dancing Script */
+        @font-face {
+        font-family: 'Dancing Script';
+        src: url('assets/fonts/DancingScript-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        }
+
+        /* Pacifico */
+        @font-face {
+        font-family: 'Pacifico';
+        src: url('assets/fonts/Pacifico-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        }
+
+        /* Roboto */
+        @font-face {
+        font-family: 'Roboto';
+        src: url('assets/fonts/Roboto-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        }
+
+        html, body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-light-gray);
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+            min-height: 100vh;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-light-gray);
+            z-index: 1000;
+        }
+
+        .background {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, #ff69b4, #b388ff, #0000ff);
+            animation: gradientFlow 10s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .particles {
+            position: absolute;
+            inset: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: float 8s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-20vh); opacity: 0; }
+        }
+
+        #loader {
+            color: white;
+            font: 1.7em 'Dancing Script', cursive;
+            z-index: 1;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .navbar {
+            display: none;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            font: 1.1rem 'Dancing Script', cursive;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+
+        .navbar.active {
+            display: flex;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #000;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #0000ff;
+        }
+
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .home-container h1 {
+            font: 1.8rem 'Pacifico', cursive;
+            color: var(--pink-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        #memories .home-container h1 {
+            color: var(--blue-accent);
+        }
+
+        .countdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .countdown div {
+            background: #fff;
+            padding: 0.8rem;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            min-width: 50px;
+        }
+
+        .countdown span:first-child {
+            display: block;
+            font: bold 1.2rem 'Roboto', sans-serif;
+            color: var(--pink-accent);
+        }
+
+        .letter-box {
+            background: #fff0f5;
+            border: 2px solid var(--btn-pink);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 90%;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .letter-heading {
+            font: 1.6rem 'Pacifico', cursive;
+            color: var(--pink-accent);
+            margin-bottom: 1rem;
+        }
+
+        .letter-text {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .memories-container {
+            padding: 1rem;
+            width: 100%;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .media-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .media-item img,
+        .media-item video,
+        .media-item audio {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .media-item audio {
+            background: var(--pink-accent);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        #memories .media-item audio {
+            background: var(--blue-accent);
+        }
+
+        .media-item p {
+            font-size: 0.95rem;
+            padding: 0.5rem 0;
+        }
+
+        .cta-button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 40px;
+            background: var(--btn-pink);
+            color: var(--text-dark);
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: background 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--btn-pink-hover);
+        }
+
+        #memories .cta-button {
+            background: var(--btn-blue);
+        }
+
+        #memories .cta-button:hover {
+            background: var(--btn-blue-hover);
+        }
+
+        .letter-buttons {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        .slide-up {
+            opacity: 0;
+            transform: translateY(15px);
+            animation: slideUp 1s forwards 0.3s;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .navbar { gap: 0.5rem; font-size: 0.9rem; }
+            .navbar a:hover { color: #000; }
+            .home-container h1 { font-size: 1.4rem; }
+            .countdown div {
+                padding: 0.4rem;
+                min-width: 40px;
+                font-size: 0.8rem;
+            }
+            .countdown span:first-child {
+                font-size: 1rem;
+            }
+            .cta-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+            .letter-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.8rem;
+            }
+            .letter-heading { font-size: 1.4rem; }
+            .letter-box { 
+                padding: 1rem;
+                max-width: 92%;
+                margin-top: 1rem;
+            }
+            .letter-text { font-size: 0.87rem;
+                text-align: justify; }
+            #loader { font-size: 1.2em; }
+            .particle { width: 4px !important; height: 4px !important; }
+            .media-item { padding: 0.8rem; }
+            .media-item p { font-size: 0.9rem; }
+            .cta-button:hover {
+                background: var(--btn-pink);
+            }
+            #memories .cta-button:hover {
+                background: var(--btn-blue);
+            }
+        }
+
+        .slanted {
+            /*transform: skew(10deg);*/
+            font-style: italic;
+        }
+
+        @media (max-width: 400px) {
+            .home-container h1 { font-size: 1.2rem; }
+            .countdown div {
+                padding: 0.4rem;
+                min-width: 35px;
+                font-size: 0.7rem;
+            }
+            .countdown span:first-child {
+                font-size: 0.9rem;
+            }
+            .cta-button {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .letter-heading { font-size: 1.2rem; }
+            .letter-buttons {
+                gap: 0.6rem;
+            }
+        }
+
+        @media (min-width: 601px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 800px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="background"></div>
+        <div class="particles" id="particles"></div>
+        <div id="loader">Loading your surprise... 💝</div>
+    </div>
+
+    <audio id="background-music" loop>
+        <source src="assets/audio/Beach-music.wav" type="audio/mpeg">
+    </audio>
+
+    <audio id="confetti-sound">
+        <source src="assets/audio/confetti-blast.mp3" type="audio/mpeg">
+    </audio>
+
+    <nav class="navbar">
+        <a onclick="showSection('home')">Home</a>
+        <a onclick="showSection('letter')">Letter</a>
+        <a onclick="showSection('memories')">Memories</a>
+    </nav>
+
+    <div id="home" class="section">
+        <main class="home-container">
+            <h1 class="fade-in">🎉 Happy Birthday, Dipa! 🎉</h1>
+            <div class="countdown fade-in" id="countdown">
+                <div><span id="days">--</span><span>Days</span></div>
+                <div><span id="hours">--</span><span>Hours</span></div>
+                <div><span id="minutes">--</span><span>Minutes</span></div>
+                <div><span id="seconds">--</span><span>Seconds</span></div>
+            </div>
+            <div class="letter-buttons">
+                <button id="music-toggle" class="cta-button slide-up">Play Music 🎶</button>
+                <button class="cta-button slide-up" onclick="showSection('letter')">Start with the Letter ❤️</button>
+            </div>
+        </main>
+    </div>
+
+    <div id="letter" class="section">
+        <main class="home-container fade-in">
+            <div class="letter-box">
+                <h1 class="letter-heading">To My Love,</h1>
+                <p>A Few Special Voice Messages!</p><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/1.mp3" type="audio/mpeg"></audio>
+                    <p>1</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/2.mp3" type="audio/mpeg"></audio>
+                    <p>2</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/3.mp3" type="audio/mpeg"></audio>
+                    <p>3</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/4.mp3" type="audio/mpeg"></audio>
+                    <p>4</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/5.mp3" type="audio/mpeg"></audio>
+                    <p>5</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/6.mp3" type="audio/mpeg"></audio>
+                    <p>6</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/7.mp3" type="audio/mpeg"></audio>
+                    <p>7</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/8.mp3" type="audio/mpeg"></audio>
+                    <p>8</p>
+                </div><br/>
+                <div class="media-item slide-up">
+                    <audio controls><source src="assets/audio/9.mp3" type="audio/mpeg"></audio>
+                    <p>9</p>
+                </div><br/>
+                <!--<h1 class="letter-heading"><br/>To My Love,</h1>-->
+                <!--<p class="letter-text">
+                    On this special day, I want you to know how deeply you are loved.
+                    Every moment with you is a memory I cherish — your smile, your voice,
+                    your laugh, and the warmth you bring into my life. You've made my world
+                    more beautiful, just by being in it.
+                </p>-->
+                <p class="letter-text">
+                    Hi, My Dipa. I want to say a lot of things but I am not able to express. I hope you love these voice love-letter notes. This is my first time. I love you Dipa. Wishing you a very HAPPY BIRTHDAY! Be happy and safe. Don’t get wounded. Don’t hurt yourself Nana. I miss you so much. Eat healthy and on time. Drink water daily and stay hydrated. Advance HAPPY BIRTHDAY my love(My 4).
+                </p>
+                <p class="letter-text">Happy Birthday, Darling.</p>
+                <p class="letter-text">- With all my love,<br>Madam ka Sona.<br/>(I mean ‘Tumhaara Jai Deep’)</p>
+                <div class="letter-buttons">
+                    <button class="cta-button" onclick="showSection('home')">Back to Home 🏠</button>
+                    <button class="cta-button" onclick="showSection('memories')">View Memories 📸</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="memories" class="section">
+        <main class="home-container fade-in">
+            <h1 class="fade-in">Our Beautiful Memories and Moments</h1>
+            <div class="memories-container fade-in">
+                <div class="gallery">
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory1.jpg" alt="Memory 1">
+                        <p class="slanted">Do you remember, this was the pic I sent you first without revealing my face.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory2.jpg" alt="Memory 2">
+                        <p class="slanted">My Baby Girl.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory3.jpg" alt="Memory 3">
+                        <p class="slanted">I made it for my watch wallpaper. My Family and my future wife's eyes.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory4.jpg" alt="Memory 4">
+                        <p class="slanted">Among these pics, your eyes, I uesed them in the wallpaper. Guess which one 😉</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory5.jpg" alt="Memory 5">
+                        <p class="slanted">US ❤️</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory6.jpg" alt="Memory 6">
+                        <p class="slanted">The Pictures 👀</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory7.jpg" alt="Memory 7">
+                        <p class="slanted">Chean Tapak Dum Dum</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory8.jpg" alt="Memory 8">
+                        <p class="slanted">My Talented Baby! 😍</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory9.jpg" alt="Memory 9">
+                        <p class="slanted">I Love you too Dipa 💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory10.jpg" alt="Memory 10">
+                        <p class="slanted">Early morning, you are preparing for the exams.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory26.jpg" alt="Memory 26">
+                        <p class="slanted">😂😅</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory11.jpg" alt="Memory 11">
+                        <p class="slanted">Dipaaaaaa 😍 Do you remember the next pic you sent me 😉</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory13.jpg" alt="Memory 13">
+                        <p class="slanted">Very Cute 💗 Love you too Nana</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory14.jpg" alt="Memory 14">
+                        <p class="slanted">This was the Pic I used in my wallpaper Baby. So Cute My Darling.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory15.jpg" alt="Memory 15">
+                        <p class="slanted">Love Youuuuuuuu ❤️</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory16.jpg" alt="Memory 16">
+                        <p class="slanted">I shown you the above pic then you are... 😂</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory17.jpg" alt="Memory 17">
+                        <p class="slanted">Your Brother also wants to see the pic 😜</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory18.jpg" alt="Memory 18">
+                        <p class="slanted">Later, we played UNO. Beautiful memories Dipa 💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory12.jpg" alt="Memory 12">
+                        <p class="slanted">LOL, your brother baby. That day you asked me for a promise but I didn't know what it is yet you haven't told me. And to make promise I asked you for surprise. And this was the pic you sent me baby 😒😂</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory35.jpg" alt="Memory 35">
+                        <p class="slanted">When I kept NGL [anonymous texts] story, you were translating each and evary sentence 💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory19.jpg" alt="Memory 19">
+                        <p class="slanted">We look beautiful 💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory20.png" alt="Memory 20">
+                        <p class="slanted">Your mehandi baby. You will get a good husband dear.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory21.png" alt="Memory 21">
+                        <p class="slanted">Your Cheeeeeeks 💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory23.jpg" alt="Memory 23">
+                        <p class="slanted">😅🫣</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory22.jpg" alt="Memory 22">
+                        <p class="slanted">My Pikachuuu!! 😅</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images//memory34.jpg" alt="Memory 34">
+                        <p class="slanted">My Love 💗 Two fingers under chin, pretty eyes, bindi, long hair, beautiful smile 👀✨🧿</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory24.jpg" alt="Memory 24">
+                        <p class="slanted">WOW! Adorable 😍</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory25.jpg" alt="Memory 25">
+                        <p class="slanted">Panda shirt [Ik it is not panda] The pretty Smile melts my heart 😚</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <video controls><source src="assets/videos/memory1.mp4" type="video/mp4"></video>
+                        <p class="slanted">My Childish Girl 😍</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <video controls><source src="assets/videos/memory2.mp4" type="video/mp4"></video>
+                        <p class="slanted">Awwwwwwwww 💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <audio controls><source src="assets/audio/memory1.mp3" type="audio/mpeg"></audio>
+                        <p class="slanted">💗✨</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory27.jpg" alt="Memory 27">
+                        <p class="slanted">Our First Video Call in this 2025 [on Jan 14th]. You were in happy tears 💗✨</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <video controls><source src="assets/videos/memory3.mp4" type="video/mp4"></video>
+                        <p class="slanted">In your Masi home. Cats are your favorite.</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory33.png" alt="Memory 33">
+                        <p class="slanted">Someone Took My Placee Noo 😭🫣😅</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory28.jpg" alt="Memory 28">
+                        <p class="slanted">Beautiful 💗😍✨<br/>My Dipanwita-with 'w' silent 😚</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory29.jpg" alt="Memory 29">
+                        <p class="slanted">After Long Time, You are here. Latest pic of my beautiful lovely girl ❤️</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory30.jpg" alt="Memory 30">
+                        <p class="slanted">The eye contacts 😭✨</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <video controls><source src="assets/videos/memory4.mp4" type="video/mp4"></video>
+                        <p class="slanted">😂 Please be careful Nana 😭💗</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory31.jpg" alt="Memory 31">
+                        <p class="slanted">You told me that you love this pic</p>
+                    </div>
+                    <div class="media-item slide-up">
+                        <img src="assets/images/memory32.jpg" alt="Memory 32">
+                        <p class="slanted">The eye contacts ✨ The way we look at each other 💗</p>
+                    </div>
+                </div>
+                <div class="letter-buttons">
+                    <button class="cta-button" onclick="showSection('letter')">Read Letter Again ❤️</button>
+                    <button class="cta-button" onclick="showSection('home')">Go Home 🏠</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const sections = document.querySelectorAll('.section');
+        const navbar = document.querySelector('.navbar');
+        const countdownEl = document.getElementById('countdown');
+        const backgroundMusic = document.getElementById('background-music');
+        const confettiSound = document.getElementById('confetti-sound');
+        const musicToggle = document.getElementById('music-toggle');
+        const buttons = document.querySelectorAll('.cta-button');
+        const mediaElements = document.querySelectorAll('audio, video'); // All media
+        let isMusicPlaying = false;
+
+        // INITIALIZE PARTICLES
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            const size = Math.random() * 6 + 2;
+            particle.className = 'particle';
+            particle.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                left: ${Math.random() * 100}%;
+                animation-delay: ${Math.random() * 8}s;
+            `;
+            particlesContainer.appendChild(particle);
+        }
+
+        // SECTION NAVIGATION WITH CONFETTI AND SOUND
+        function showSection(sectionId) {
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'home') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    startVelocity: 30,
+                    ticks: 200,
+                    zIndex: 1000
+                });
+                confettiSound.currentTime = 0;
+                confettiSound.play().catch(() => console.warn('Confetti sound playback failed.'));
+            }
+        }
+
+        // INITIAL LOAD
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            navbar.classList.add('active');
+            showSection('home');
+        }, 3500);
+
+        // COUNTDOWN
+        const birthdayDate = new Date("April 05, 2025 00:00:00").getTime();
+        function updateCountdown() {
+            const now = Date.now();
+            const distance = birthdayDate - now;
+            if (distance <= 0) {
+                clearInterval(countdownTimer);
+                countdownEl.innerHTML = '<h2 style="color:var(--pink-accent); font-family:Pacifico,cursive; font-size:1.5rem;">🎉 Happy Birthday! 🎉</h2>';
+                return;
+            }
+            const units = [
+                { id: 'days', value: Math.floor(distance / (1000 * 60 * 60 * 24)) },
+                { id: 'hours', value: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) },
+                { id: 'minutes', value: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) },
+                { id: 'seconds', value: Math.floor((distance % (1000 * 60)) / 1000) }
+            ];
+            units.forEach(unit => document.getElementById(unit.id).textContent = unit.value);
+        }
+        const countdownTimer = setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // MUSIC TOGGLE
+        musicToggle.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicToggle.textContent = 'Play Music 🎶';
+                isMusicPlaying = false;
+            } else {
+                backgroundMusic.volume = 0.35;
+                backgroundMusic.play().catch(() => console.warn('Audio playback failed.'));
+                musicToggle.textContent = 'Pause Music 🎶';
+                isMusicPlaying = true;
+            }
+        });      
+
+        // Select all buttons with the class '.cta-button'
+        //const buttons = document.querySelectorAll('.cta-button');
+
+        // Add event listeners to each button
+        buttons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                // Scroll to the top of the page when a button is clicked
+                window.scrollTo({
+                    top: (0,0)
+                });
+
+                // Optional: Add any additional behavior here if needed (e.g., navigating to a section)
+            });
+        });
+        const nav = document.querySelectorAll('.navbar a');
+        nav.forEach(navb => {
+            navb.addEventListener('click', function(event) {
+                // Scroll to the top of the page when a button is clicked
+                window.scrollTo({
+                    top: (0,0)
+                });
+
+                // Optional: Add any additional behavior here if needed (e.g., navigating to a section)
+            });
+        });
+
+
+        // MOBILE TAP EFFECT (≤ 600px)
+        if (window.matchMedia("(max-width: 600px)").matches) {
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const isMemoriesButton = button.closest('#memories');
+                    button.style.background = isMemoriesButton ? 'var(--btn-blue-hover)' : 'var(--btn-pink-hover)';
+                    button.style.background = isMemoriesButton ? 'var(--btn-blue)' : 'var(--btn-pink)';
+                });
+            });
+        }
+
+        // MEDIA SYNCHRONIZATION
+        function fadeInBackgroundMusic() {
+            if (!isMusicPlaying || !backgroundMusic.paused) return;
+            backgroundMusic.volume = 0;
+            backgroundMusic.play().catch(() => console.warn('Background music playback failed.'));
+            let volume = 0;
+            const fadeInterval = setInterval(() => {
+                volume += 0.1;
+                if (volume >= 0.35) {
+                    volume = 0.35;
+                    clearInterval(fadeInterval);
+                }
+                backgroundMusic.volume = volume;
+            }, 200); // Fade over ~2 seconds
+        }
+
+        mediaElements.forEach(media => {
+            media.addEventListener('play', () => {
+                mediaElements.forEach(other => {
+                    if (other !== media && !other.paused) {
+                        other.pause();
+                    }
+                });
+            });
+
+            media.addEventListener('pause', () => {
+                const allPaused = Array.from(mediaElements).every(m => m.paused);
+                if (allPaused && isMusicPlaying) {
+                    setTimeout(fadeInBackgroundMusic, 500); // Delay to avoid overlap
+                }
+            });
+        });
+    </script>
+</body>
+</html>
